@@ -1,10 +1,8 @@
 import mongoose from 'mongoose';
 import { unescape,shuffle } from 'lodash';
-import { connectMongo } from '../../util/dbConnect';
 import { Question } from '../../models/Question';
 import { User } from '../../models/User';
-import { ApolloError } from 'apollo-server-errors';
-
+import { ApolloError, UserInputError } from 'apollo-server-errors';
 
 export const resolvers = {
   Query: {
@@ -52,6 +50,27 @@ export const resolvers = {
       return {
         username:user.username,
         token:"example token"
+      }
+    },
+
+    signin: async(parent,args) => {
+      const {username,password} = args;
+
+      const user = await User.findOne({username}).exec();
+
+      if(!user){
+        throw new UserInputError('Invalid username')
+      }
+      // const isMatch = await bcrypt.compare(password,user.password)
+      // we can reuse this anywhere else in our application and so we extracted the logic a bit 
+      const isMatch = await user.comparePasswords(password)
+      if(!isMatch){
+        throw new UserInputError('Invalid password')
+      }
+
+      return {
+        username:user.username,
+        token:"Successful sign in token"
       }
     },
       fetchQuestions: async () => {

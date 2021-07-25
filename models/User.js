@@ -24,8 +24,16 @@ const UserSchema = new mongoose.Schema({
         default:[]
     }
 })
-// going to hash our password using bcrypt and mongoose 
 
+// we need to use the function keyword here because we need access to this which is the user in this case 
+// this is letting us set a method on our user which we can use to make the comparison for passwords and we can move that logic out of our resolver 
+UserSchema.methods.comparePasswords = async function(password){
+    const user = this;
+
+    const isMatch = bcrypt.compare(password,user.password);
+    return isMatch
+}
+// going to hash our password using bcrypt and mongoose 
 UserSchema.pre("save", async function(next){
     const user = this;
     
