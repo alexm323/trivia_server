@@ -2,7 +2,14 @@ import mongoose from 'mongoose';
 import { unescape,shuffle } from 'lodash';
 import { Question } from '../../models/Question';
 import { User } from '../../models/User';
-import { ApolloError, UserInputError } from 'apollo-server-errors';
+import { ApolloError, UserInputError, AuthenticationError} from 'apollo-server-errors';
+
+const requireAuth = context => {
+  if(!context.user){
+    throw new AuthenticationError("Authentication required.")
+  }
+  return;
+}
 
 export const resolvers = {
   Query: {
@@ -79,8 +86,8 @@ export const resolvers = {
         token
       }
     },
-      fetchQuestions: async () => {
-  
+      fetchQuestions: async (parents,args,context) => {
+        requireAuth(context)
 
           const url = `https://opentdb.com/api.php?amount=3`;
           const response = await fetch(url)
