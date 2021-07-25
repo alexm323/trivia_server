@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { unescape,shuffle } from 'lodash';
 import { connectMongo } from '../../util/dbConnect';
 import { Question } from '../../models/Question';
+import { User } from '../../models/User';
 import { ApolloError } from 'apollo-server-errors';
 
 
@@ -43,6 +44,16 @@ export const resolvers = {
 
 
   Mutation:{
+    register: async (parent,args) => {
+      // console.log(args.user) 
+      const {username,password} = args.user;
+      const user = await new User({username,password}).save()
+
+      return {
+        username:user.username,
+        token:"example token"
+      }
+    },
       fetchQuestions: async () => {
   
 

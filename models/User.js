@@ -25,4 +25,14 @@ const UserSchema = new mongoose.Schema({
     }
 })
 
+
+// we can use a hook on the schema so that if we try to create a duplicate user we can get a different error message
+UserSchema.post('save',async(error,doc,next)=> {
+    if(error.name === 'MongoError' && error.code === 11000){
+        next(new Error("Username is already in use."))
+    }else{
+        next(error)
+    }
+});
+
 export const User = mongoose.models.User || mongoose.model('User',UserSchema)
