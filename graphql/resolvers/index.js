@@ -15,7 +15,8 @@ export const resolvers = {
         message: 'Hello, world!',
       };
     },
-    question: async () => {
+    question: async (parent,args,context) => {
+      console.log('question context',context)
         // const questions = await Question.find({},null,{limit:1}).exec();
         // an aggregation is like a find but with a lot more stuff it can mutate data but we can also use it to grab a random collection. 
         //  a function that takes an argument of an array, take a sample and give it a size 
