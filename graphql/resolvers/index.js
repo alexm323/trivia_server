@@ -46,10 +46,11 @@ export const resolvers = {
       // console.log(args.user) 
       const {username,password} = args.user;
       const user = await new User({username,password}).save()
-
+      // lets create a token for a user 
+      const token = await user.generateToken()
       return {
         username:user.username,
-        token:"example token"
+        token
       }
     },
 
@@ -64,13 +65,17 @@ export const resolvers = {
       // const isMatch = await bcrypt.compare(password,user.password)
       // we can reuse this anywhere else in our application and so we extracted the logic a bit 
       const isMatch = await user.comparePasswords(password)
+      let token;
+      if(isMatch){
+       token = await user.generateToken()
+      }
       if(!isMatch){
         throw new UserInputError('Invalid password')
       }
 
       return {
         username:user.username,
-        token:"Successful sign in token"
+        token
       }
     },
       fetchQuestions: async () => {
