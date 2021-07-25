@@ -27,9 +27,22 @@ export const resolvers = {
     },
 
     question: async (parent, args, context) => {
+      let questionsAnswered = [];
+
+      if(context.user){
+        // the array of questions answered for a user should be an array of the incorrect and correct questions but we need to convert the id strings into mongo type Object Ids which is how they are stored in the database 
+        questionsAnswered = [
+          ...context.user.incorrectQuestions.map(_id => mongoose.Types.ObjectId(_id)),
+          ...context.user.correctQuestions.map(_id => mongoose.Types.ObjectId(_id))
+        ]
+      }
       console.log('question context', context);
       // const questions = await Question.find({}, null, { limit: 1 }).exec();
       const questions = await Question.aggregate([
+        {
+          // going to use this mongodb matcher to check if a user id is not in (nin) because if they arent then we dont want to track the answers so it will just be an empty array
+          $match:{_id: {$nin: questionsAnswered}}
+        },
         {
           $sample: { size: 1 },
         },
