@@ -5,46 +5,40 @@ export const typeDefs = gql`
     greet: ExampleResponse
     question: Question
   }
-
   type Mutation {
-      fetchQuestions: FetchQuestionsResponse
-      # 
-      register(user: NewUser!):AuthResponse
-      signin(username: String!, password: String!): AuthResponse
+    fetchQuestions: FetchQuestionsResponse
+    register(user: NewUser!): AuthResponse
+    signin(username: String!, password: String!): AuthResponse
+    completeQuestion(questionId: String!, correct: Boolean!): Stats
   }
-
   input NewUser {
-    username: String!,
-    password: String!,
+    username: String!
+    password: String!
+  }
+  type Stats {
+    questionsAnswered: Int
+    questionsAnsweredCorrectly: Int
   }
   type AuthResponse {
-    username: String,
+    username: String
     token: String
   }
-
   type ExampleResponse {
     name: String
     message: String
   }
-
   type FetchQuestionsResponse {
-      questionsSaved: Int
+    questionsSaved: Int
   }
   type Question {
-      _id: String
-      question: String
-      category: String
-      difficulty: String
-      answers: [QuestionAnswer]
-
+    _id: String
+    question: String
+    category: String
+    difficulty: String
+    answers: [QuestionAnswer]
   }
-  type QuestionAnswer{
-      answer: String
-      correct: Boolean
+  type QuestionAnswer {
+    answer: String
+    correct: Boolean
   }
 `;
-
-
-// here we set up a type def and then we need to go over to the resolver to actually do the work for this mutation
-// we are just going to mirror what we did in our schema 
-
